@@ -6,16 +6,15 @@
 
 using namespace std;
 
-struct globalArgs_t {
-    int verbosity;              /* -v option */
-    int asServer;
-    char * database;
-    set<string> tables;
-    int interval;
-    unsigned int port;
-    char * remoteHost;
+struct globalArgs_t
+{
+	int verbosity; /* -v option */
+	int asServer;
+	char * database;
+	set<string> tables;
+	int interval;
+	unsigned int port;
+	char * remoteHost;
 };
-
-
 
 #endif // GLOBAL_ARGS_H

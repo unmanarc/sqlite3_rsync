@@ -17,24 +17,24 @@ typedef queue<void *> ElementsQueue;
 class TSHeap
 {
 public:
-    TSHeap();
-    TSHeap(TSUInt32 * _maxElements);
+	TSHeap();
+	TSHeap(TSUInt32 * _maxElements);
 
-    u_int32_t GetElementsCount();
+	u_int32_t GetElementsCount();
 
-    bool AddElement(void *data);
-    void * GetElement();
+	bool AddElement(void *data);
+	void * GetElement();
 
-    ~TSHeap();
+	~TSHeap();
 
 private:
-    // Thread based items:
-    pthread_mutexattr_t l_mattr;
-    pthread_mutex_t l_mp;
-    pthread_cond_t notFull,notEmpty;
+	// Thread based items:
+	pthread_mutexattr_t l_mattr;
+	pthread_mutex_t l_mp;
+	pthread_cond_t notFull, notEmpty;
 
-    ElementsQueue elementsHeap;
-    TSUInt32 * maxElements, * maxElementsToDestroy;
+	ElementsQueue elementsHeap;
+	TSUInt32 * maxElements, *maxElementsToDestroy;
 };
 
 #endif // TSHEAP_H

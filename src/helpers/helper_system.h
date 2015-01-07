@@ -5,5 +5,4 @@
 
 std::string GetUUID();
 
-
 #endif // SYSTEMX_H

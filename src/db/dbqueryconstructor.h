@@ -8,41 +8,45 @@
 
 using namespace std;
 
-struct DataParameter {
-    string paramName;
-    bool blob;
+struct DataParameter
+{
+	string paramName;
+	bool blob;
 };
 
-struct DataSelect {
-    string query;
-    vector<DataParameter> params;
+struct DataSelect
+{
+	string query;
+	vector<DataParameter> params;
 };
 
-class DBQueryConstructor : public DBQuery
+class DBQueryConstructor: public DBQuery
 {
 public:
-    DBQueryConstructor();
+	DBQueryConstructor();
 
-    string getTable() const;
-    void setTable(const string &value);
+	string getTable() const;
+	void setTable(const string &value);
 
-    void AddParameterDefinition(const string & paramName, const string & paramType);
-    void AddParameterValue(const string & paramName, const string & paramValue);
-    void AddParameterAsBLOB(const string & paramName, char * data, unsigned int len);
-    void ConstructQuery();
+	void AddParameterDefinition(const string & paramName,
+			const string & paramType);
+	void AddParameterValue(const string & paramName, const string & paramValue);
+	void AddParameterAsBLOB(const string & paramName, char * data,
+			unsigned int len);
+	void ConstructQuery();
 
-    DataSelect GetDataSelect(unsigned long long oid);
+	DataSelect GetDataSelect(unsigned long long oid);
 
-    ~DBQueryConstructor();
+	~DBQueryConstructor();
 private:
 
-    string SQLFilter(const string & sqlValue);
+	string SQLFilter(const string & sqlValue);
 
-    string table;
-    map<string,string> paramDefs;
-    map<string,string> paramValues;
-    map<unsigned int,string> paramBlobs;
-    unsigned int blobCount;
+	string table;
+	map<string, string> paramDefs;
+	map<string, string> paramValues;
+	map<unsigned int, string> paramBlobs;
+	unsigned int blobCount;
 };
 
 #endif // DBQUERYCONSTRUCTOR_H

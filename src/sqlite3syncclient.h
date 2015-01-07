@@ -18,49 +18,48 @@ using namespace std;
 class SQLite3SyncClient
 {
 public:
-    SQLite3SyncClient();
+	SQLite3SyncClient();
 
-    void LoadDB(string _dbFile, string _currentTable);
+	void LoadDB(string _dbFile, string _currentTable);
 
-    void ProcessDBItems();
+	void ProcessDBItems();
 
-    void StartMonitoringDB();
+	void StartMonitoringDB();
 
-    unsigned short getSTcpPort() const;
-    void setSTcpPort(unsigned short value);
+	unsigned short getSTcpPort() const;
+	void setSTcpPort(unsigned short value);
 
-    string getCurrentTable() const;
-    void setCurrentTable(const string &value);
+	string getCurrentTable() const;
+	void setCurrentTable(const string &value);
 
-    string getRemoteHost() const;
-    void setRemoteHost(const string &value);
+	string getRemoteHost() const;
+	void setRemoteHost(const string &value);
 
-    unsigned int getInterval() const;
-    void setInterval(unsigned int value);
+	unsigned int getInterval() const;
+	void setInterval(unsigned int value);
 
 private:
-    int ExecQuery(XSocketInterface * cmdiface, const string & query);
-    int ExecQuery(XSocketInterface * cmdiface, const DBQuery & query);
-    void AddQueries(std::list<DBQuery *> queries);
+	int ExecQuery(XSocketInterface * cmdiface, const string & query);
+	int ExecQuery(XSocketInterface * cmdiface, const DBQuery & query);
+	void AddQueries(std::list<DBQuery *> queries);
 
+	TSHeap heapQueries;
 
-    TSHeap heapQueries;
+	void ReconnectTimeout();
 
-    void ReconnectTimeout();
+	string remoteUUID;
+	bool monitorStarted;
 
-    string remoteUUID;
-    bool monitorStarted;
+	XTCPSocket serverConnection;
 
-    XTCPSocket serverConnection;
+	u_int64_t lastRetrievedOID;
+	unsigned int interval;
 
-    u_int64_t lastRetrievedOID;
-    unsigned int interval;
-
-    SQLiteDBConnector dbConnector;
-    unsigned short sTcpPort;
-    string remoteHost;
-    string currentTable;
-    string dbFile;
+	SQLiteDBConnector dbConnector;
+	unsigned short sTcpPort;
+	string remoteHost;
+	string currentTable;
+	string dbFile;
 };
 
 #endif // SQLITE3SYNCCLIENT_H

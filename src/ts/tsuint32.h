@@ -6,20 +6,20 @@
 class TSUInt32
 {
 public:
-    TSUInt32();
+	TSUInt32();
 
-    unsigned int operator++();
-    void operator--();
+	unsigned int operator++();
+	void operator--();
 
-    void operator=(const unsigned int _x);
-    //operator int();
-    operator unsigned int();
-    void setRange(const unsigned int min,const unsigned int max);
-    unsigned int getMin();
-    unsigned int getMax();
+	void operator=(const unsigned int _x);
+	//operator int();
+	operator unsigned int();
+	void setRange(const unsigned int min, const unsigned int max);
+	unsigned int getMin();
+	unsigned int getMax();
 
 private:
-    unsigned int x,minval,maxval;
-    pthread_rwlock_t rwlock;
+	unsigned int x, minval, maxval;
+	pthread_rwlock_t rwlock;
 };
 #endif // TSUINT32_H

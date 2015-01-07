@@ -13,19 +13,19 @@ extern globalArgs_t globalArgs;
 class SQLite3SyncServer
 {
 public:
-    SQLite3SyncServer();
-    ~SQLite3SyncServer();
+	SQLite3SyncServer();
+	~SQLite3SyncServer();
 
-    void AttendClient(XSocket sock);
+	void AttendClient(XSocket sock);
 
-    void LoadDB(string _dbFile);
-    void StartListenerThreads();
+	void LoadDB(string _dbFile);
+	void StartListenerThreads();
 
-    unsigned short getSTcpPort() const;
-    void setSTcpPort(unsigned short value);
+	unsigned short getSTcpPort() const;
+	void setSTcpPort(unsigned short value);
 private:
-    unsigned short sTcpPort;
-    SQLiteDBConnector dbConnector;
+	unsigned short sTcpPort;
+	SQLiteDBConnector dbConnector;
 };
 
 #endif // SQLITE3SYNCSERVER_H
