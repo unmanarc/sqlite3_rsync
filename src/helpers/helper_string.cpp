@@ -18,8 +18,7 @@ using std::string;
 
 void find_and_replace(string& source, string const& find, string const& replace)
 {
-	for (std::string::size_type i = 0;
-			(i = source.find(find, i)) != std::string::npos;)
+	for (std::string::size_type i = 0; (i = source.find(find, i)) != std::string::npos;)
 	{
 		source.replace(i, find.length(), replace);
 		i += replace.length() - find.length() + 1;

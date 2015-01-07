@@ -32,9 +32,7 @@ void help_and_exit()
 {
 	cout << "Help:" << endl;
 	cout << "-----" << endl;
-	cout
-			<< "sqlite3_rsync synchronizes SQLite3 databases from the client to the server using tables OID."
-			<< endl;
+	cout << "sqlite3_rsync synchronizes SQLite3 databases from the client to the server using tables OID." << endl;
 	cout << endl;
 	cout << "Server Mode:" << endl;
 	cout << "------------" << endl;
@@ -45,11 +43,8 @@ void help_and_exit()
 	cout << "------------" << endl;
 	cout << "-c --client <host:port>  : Act as TCP client" << endl;
 	cout << "-d --database <file>     : Local database filepath" << endl;
-	cout
-			<< "-t --tables <t1,t2,...>  : Comma separated list of tables to be synchronized"
-			<< endl;
-	cout << "-i --interval <seconds>  : Seconds between each upgrade attempt"
-			<< endl;
+	cout << "-t --tables <t1,t2,...>  : Comma separated list of tables to be synchronized" << endl;
+	cout << "-i --interval <seconds>  : Seconds between each upgrade attempt" << endl;
 	cout << endl;
 	cout << "Other Options:" << endl;
 	cout << "--------------" << endl;
@@ -66,8 +61,7 @@ struct SQLite3SyncClientForTableArgs
 // For each table, there is a client thread connected to the master.
 void * SQLite3SyncClientForTableThread(void * data)
 {
-	SQLite3SyncClientForTableArgs * args =
-			(SQLite3SyncClientForTableArgs *) data;
+	SQLite3SyncClientForTableArgs * args = (SQLite3SyncClientForTableArgs *) data;
 
 	SQLite3SyncClient client;
 	client.setRemoteHost(globalArgs.remoteHost);
@@ -88,9 +82,7 @@ void * SQLite3SyncClientForTableThread(void * data)
 
 int main(int argc, char *argv[])
 {
-	cout
-			<< "SQLite3 R-Sync 0.1a - Done by Aaron Mizrachi (Unmanarc) <aaron@unmanarc.com>"
-			<< endl;
+	cout << "SQLite3 R-Sync 0.1a - Done by Aaron Mizrachi (Unmanarc) <aaron@unmanarc.com>" << endl;
 
 	int opt = 0, longIndex;
 
@@ -133,8 +125,7 @@ int main(int argc, char *argv[])
 			char * tables = strdup(optarg);
 			const char * delim = ",";
 			char *save, *p;
-			for (p = strtok_r(tables, delim, &save); p;
-					p = strtok_r(NULL, delim, &save))
+			for (p = strtok_r(tables, delim, &save); p; p = strtok_r(NULL, delim, &save))
 			{
 				string tableName = p;
 				globalArgs.tables.insert(tableName);
@@ -198,20 +189,17 @@ int main(int argc, char *argv[])
 	bool terminate = false;
 	if (!globalArgs.database)
 	{
-		fprintf(stderr,
-				"Error: please specify database filename (-d filename)\n");
+		fprintf(stderr, "Error: please specify database filename (-d filename)\n");
 		terminate = true;
 	}
 	if (globalArgs.tables.empty() && !globalArgs.asServer)
 	{
-		fprintf(stderr,
-				"Error: please specify tables to sync (-t table1,table2,...)\n");
+		fprintf(stderr, "Error: please specify tables to sync (-t table1,table2,...)\n");
 		terminate = true;
 	}
 	if (!globalArgs.asServer && !globalArgs.remoteHost)
 	{
-		fprintf(stderr,
-				"Error: please specify the remote host (-c host:port)\n");
+		fprintf(stderr, "Error: please specify the remote host (-c host:port)\n");
 		terminate = true;
 	}
 	if (access(globalArgs.database, R_OK) && !globalArgs.asServer)
@@ -235,8 +223,7 @@ int main(int argc, char *argv[])
 
 		for (string table : globalArgs.tables)
 		{
-			SQLite3SyncClientForTableArgs * arg =
-					new SQLite3SyncClientForTableArgs;
+			SQLite3SyncClientForTableArgs * arg = new SQLite3SyncClientForTableArgs;
 			arg->table = table;
 
 			pthread_t * pt = new pthread_t;

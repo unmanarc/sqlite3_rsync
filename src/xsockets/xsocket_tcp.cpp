@@ -11,8 +11,7 @@ XTCPSocket::XTCPSocket()
 {
 }
 
-bool XTCPSocket::Connect(const std::string & hostname, uint16_t port,
-		uint32_t timeout)
+bool XTCPSocket::Connect(const std::string & hostname, uint16_t port, uint32_t timeout)
 {
 	if (sockfd)
 		Close(); // close first
@@ -111,8 +110,7 @@ void *TCPAcceptorThread(void *d)
 	pthread_exit(NULL);
 }
 
-bool XTCPSocket::ThreadedAcceptTCP(bool (*func)(void *, XTCPSocket &),
-		void * obj)
+bool XTCPSocket::ThreadedAcceptTCP(bool (*func)(void *, XTCPSocket &), void * obj)
 {
 	pthread_t p_thread_db;
 	callbackFunction * cbf = new callbackFunction;
@@ -146,8 +144,7 @@ XSocket XTCPSocket::Accept()
 	struct sockaddr_in cli_addr;
 	clilen = sizeof(cli_addr);
 
-	if ((sdconn = accept(sockfd, (struct sockaddr *) &cli_addr,
-			(socklen_t *) &clilen)) >= 0)
+	if ((sdconn = accept(sockfd, (struct sockaddr *) &cli_addr, (socklen_t *) &clilen)) >= 0)
 	{
 		// Set the proper socket-
 		cursocket.SetSocket(sdconn);
@@ -164,8 +161,7 @@ XSocket XTCPSocket::Accept()
 	return cursocket;
 }
 
-bool XTCPSocket::Listen(uint16_t port, const string & listenOnAddr,
-		bool useIPv4, int recvbuffer)
+bool XTCPSocket::Listen(uint16_t port, const string & listenOnAddr, bool useIPv4, int recvbuffer)
 {
 	int on = 1;
 
@@ -189,8 +185,7 @@ bool XTCPSocket::Listen(uint16_t port, const string & listenOnAddr,
 	if (recvbuffer)
 		SetRecvBuffer(recvbuffer);
 
-	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on))
-			< 0)
+	if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on)) < 0)
 	{
 		lastError = "setsockopt(SO_REUSEADDR) failed";
 		Close();
@@ -203,11 +198,9 @@ bool XTCPSocket::Listen(uint16_t port, const string & listenOnAddr,
 		serveraddr.sin_family = AF_INET;
 		serveraddr.sin_port = htons(port);
 		inet_pton(AF_INET, listenOnAddr.c_str(), &serveraddr.sin_addr);
-		if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr))
-				< 0)
+		if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
 		{
-			fprintf(stderr, "bind() failed for %s:%d ", listenOnAddr.c_str(),
-					port);
+			fprintf(stderr, "bind() failed for %s:%d ", listenOnAddr.c_str(), port);
 			perror("");
 			lastError = "bind() failed";
 			Close();
@@ -222,8 +215,7 @@ bool XTCPSocket::Listen(uint16_t port, const string & listenOnAddr,
 		serveraddr.sin6_port = htons(port);
 		//serveraddr.sin6_addr   = in6addr_any;
 		inet_pton(AF_INET6, listenOnAddr.c_str(), &serveraddr.sin6_addr);
-		if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr))
-				< 0)
+		if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
 		{
 			lastError = "bind() failed";
 			Close();

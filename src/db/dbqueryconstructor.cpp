@@ -30,20 +30,17 @@ void DBQueryConstructor::setTable(const string &value)
 	table = value;
 }
 
-void DBQueryConstructor::AddParameterDefinition(const string &paramName,
-		const string &paramType)
+void DBQueryConstructor::AddParameterDefinition(const string &paramName, const string &paramType)
 {
 	paramDefs[paramName] = paramType;
 }
 
-void DBQueryConstructor::AddParameterValue(const string &paramName,
-		const string &paramValue)
+void DBQueryConstructor::AddParameterValue(const string &paramName, const string &paramValue)
 {
 	paramValues[paramName] = paramValue;
 }
 
-void DBQueryConstructor::AddParameterAsBLOB(const string &paramName, char *data,
-		unsigned int len)
+void DBQueryConstructor::AddParameterAsBLOB(const string &paramName, char *data, unsigned int len)
 {
 	AddBlob(blobCount, data, len);
 	paramBlobs[blobCount++] = paramName;
@@ -81,8 +78,7 @@ void DBQueryConstructor::ConstructQuery()
 		xquery_params += string("`") + paramBlobs[i] + string("`");
 		xquery_values += "?";
 	}
-	query = "INSERT INTO `" + table + "` (" + xquery_params + ") values("
-			+ xquery_values + ");\n";
+	query = "INSERT INTO `" + table + "` (" + xquery_params + ") values(" + xquery_values + ");\n";
 }
 
 DataSelect DBQueryConstructor::GetDataSelect(unsigned long long oid)
@@ -108,8 +104,7 @@ DataSelect DBQueryConstructor::GetDataSelect(unsigned long long oid)
 
 	char val[128];
 	sprintf(val, "%llu", oid);
-	r.query += " FROM " + table + string(" WHERE oid='") + string(val)
-			+ string("';");
+	r.query += " FROM " + table + string(" WHERE oid='") + string(val) + string("';");
 
 	return r;
 }

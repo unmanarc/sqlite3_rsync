@@ -135,8 +135,7 @@ list<string> XSocketInterface::ReadStringList(bool *bok, unsigned int max)
 	return rsl;
 }
 
-bool XSocketInterface::WriteStringList(const list<string> &val,
-		unsigned int max)
+bool XSocketInterface::WriteStringList(const list<string> &val, unsigned int max)
 {
 	if (!WriteUInt32(val.size()))
 		return false;

@@ -28,9 +28,7 @@ void SQLite3SyncClient::LoadDB(string _dbFile, string _currentTable)
 
 void SQLite3SyncClient::ProcessDBItems()
 {
-	AddQueries(
-			dbConnector.GetQueriesForOIDSGreaterThan(currentTable,
-					lastRetrievedOID, &lastRetrievedOID));
+	AddQueries(dbConnector.GetQueriesForOIDSGreaterThan(currentTable, lastRetrievedOID, &lastRetrievedOID));
 	sleep(interval);
 }
 
@@ -55,8 +53,7 @@ void SQLite3SyncClient::StartMonitoringDB()
 			while (!serverConnection.Connect(remoteHost, sTcpPort))
 			{
 				ReconnectTimeout();
-				printf("Retrying connection to %s:%d.\n", remoteHost.c_str(),
-						sTcpPort);
+				printf("Retrying connection to %s:%d.\n", remoteHost.c_str(), sTcpPort);
 			}
 		}
 		printf("Connected to %s:%d\n", remoteHost.c_str(), sTcpPort);
@@ -68,8 +65,7 @@ void SQLite3SyncClient::StartMonitoringDB()
 
 		if (!cmdiface.ReadUChar())
 		{
-			if ((r = ExecQuery(&cmdiface,
-					dbConnector.GetCreateTable(currentTable))) < 0)
+			if ((r = ExecQuery(&cmdiface, dbConnector.GetCreateTable(currentTable))) < 0)
 			{
 				// reconnect.
 				continue;
@@ -82,8 +78,7 @@ void SQLite3SyncClient::StartMonitoringDB()
 		// SYNC (different uuid, or first time)
 		if (remoteUUID != currentUUID)
 		{
-			std::list<std::string> clientNodes = dbConnector.GetOIDSForTable(
-					currentTable);
+			std::list<std::string> clientNodes = dbConnector.GetOIDSForTable(currentTable);
 			// Compress it before send.
 			clientNodes = CompressOIDNodes(clientNodes);
 
@@ -92,7 +87,7 @@ void SQLite3SyncClient::StartMonitoringDB()
 
 			bool ok;
 			list<string> missingNodes = cmdiface.ReadStringList(&ok,
-					MAX_OIDSIZE);
+			MAX_OIDSIZE);
 			if (!ok)
 			{
 				serverConnection.Close();
@@ -101,9 +96,7 @@ void SQLite3SyncClient::StartMonitoringDB()
 			}
 			missingNodes = ExpandOIDNodes(missingNodes);
 			list<u_int64_t> missingNodes64 = GetOIDNodesByUInt64(missingNodes);
-			AddQueries(
-					dbConnector.GetQueriesForOIDS(currentTable, missingNodes64,
-							&lastRetrievedOID));
+			AddQueries(dbConnector.GetQueriesForOIDS(currentTable, missingNodes64, &lastRetrievedOID));
 			remoteUUID = currentUUID; // synced.
 		}
 
@@ -175,15 +168,13 @@ void SQLite3SyncClient::setInterval(unsigned int value)
 	interval = value;
 }
 
-int SQLite3SyncClient::ExecQuery(XSocketInterface *cmdiface,
-		const string &query)
+int SQLite3SyncClient::ExecQuery(XSocketInterface *cmdiface, const string &query)
 {
 	DBQuery q(query);
 	return ExecQuery(cmdiface, q);
 }
 
-int SQLite3SyncClient::ExecQuery(XSocketInterface *cmdiface,
-		const DBQuery &query)
+int SQLite3SyncClient::ExecQuery(XSocketInterface *cmdiface, const DBQuery &query)
 {
 	cmdiface->WriteStringLow("ExecQuery");
 

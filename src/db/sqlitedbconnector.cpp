@@ -41,8 +41,7 @@ void SQLiteDBConnector::StartDB(const std::string &_dbFile, bool readOnly)
 			fprintf(stderr, "Can't open database: File does not exist\n");
 			_exit(0);
 		}
-		printf("Database %s does not exist. creating database...\n",
-				dbFile.c_str());
+		printf("Database %s does not exist. creating database...\n", dbFile.c_str());
 	}
 
 	int rc;
@@ -66,12 +65,10 @@ bool SQLiteDBConnector::ExecQuery(DBQuery *query)
 	const char *tail;
 	map<unsigned int, Blob> * blobs = query->GetBlobs();
 	sqlite3_stmt *stmt = 0;
-	sqlite3_prepare_v2(ppDb, query->GetQuery(), query->GetQueryLen() + 1, &stmt,
-			&tail);
+	sqlite3_prepare_v2(ppDb, query->GetQuery(), query->GetQueryLen() + 1, &stmt, &tail);
 	for (auto blob : *blobs)
 	{
-		sqlite3_bind_blob(stmt, blob.first, blob.second.blobData,
-				blob.second.blobLen, SQLITE_STATIC);
+		sqlite3_bind_blob(stmt, blob.first, blob.second.blobData, blob.second.blobLen, SQLITE_STATIC);
 	}
 	if (sqlite3_step(stmt) != SQLITE_DONE)
 	{
@@ -162,8 +159,7 @@ std::string SQLiteDBConnector::GetCreateTable(const std::string &table)
 	return rsp;
 }
 
-std::list<std::string> SQLiteDBConnector::GetOIDSForTable(
-		const std::string &table)
+std::list<std::string> SQLiteDBConnector::GetOIDSForTable(const std::string &table)
 {
 	std::list<std::string> r;
 
@@ -201,9 +197,7 @@ std::list<std::string> SQLiteDBConnector::GetOIDSForTable(
 	return r;
 }
 
-std::list<DBQuery *> SQLiteDBConnector::GetQueriesForOIDS(
-		const std::string &tableName, const std::list<u_int64_t> &oids,
-		u_int64_t *maxoid)
+std::list<DBQuery *> SQLiteDBConnector::GetQueriesForOIDS(const std::string &tableName, const std::list<u_int64_t> &oids, u_int64_t *maxoid)
 {
 	std::list<DBQuery *> r;
 	if (maxoid)
@@ -217,15 +211,12 @@ std::list<DBQuery *> SQLiteDBConnector::GetQueriesForOIDS(
 	return r;
 }
 
-std::list<DBQuery *> SQLiteDBConnector::GetQueriesForOIDSGreaterThan(
-		const std::string &tableName, u_int64_t minoid, u_int64_t *lastoid)
+std::list<DBQuery *> SQLiteDBConnector::GetQueriesForOIDSGreaterThan(const std::string &tableName, u_int64_t minoid, u_int64_t *lastoid)
 {
-	return GetQueriesForOIDS(tableName, GetOIDSGreaterThan(tableName, minoid),
-			lastoid);
+	return GetQueriesForOIDS(tableName, GetOIDSGreaterThan(tableName, minoid), lastoid);
 }
 
-std::list<u_int64_t> SQLiteDBConnector::GetOIDSGreaterThan(
-		const string &tableName, u_int64_t minoid)
+std::list<u_int64_t> SQLiteDBConnector::GetOIDSGreaterThan(const string &tableName, u_int64_t minoid)
 {
 	std::list<u_int64_t> r;
 
@@ -271,8 +262,7 @@ std::vector<std::string> STLSplit(const string & x, char * d)
 	std::vector<std::string> v;
 	char * x2 = strdup(x.c_str());
 	char *saveptr;
-	for (char * token = strtok_r(x2, d, &saveptr); token;
-			token = strtok_r(NULL, d, &saveptr))
+	for (char * token = strtok_r(x2, d, &saveptr); token; token = strtok_r(NULL, d, &saveptr))
 	{
 		v.push_back(token);
 	}
@@ -280,14 +270,12 @@ std::vector<std::string> STLSplit(const string & x, char * d)
 	return v;
 }
 
-void SQLiteDBConnector::GetTableComponents(const std::string &tableName,
-		DBQueryConstructor *dbqc)
+void SQLiteDBConnector::GetTableComponents(const std::string &tableName, DBQueryConstructor *dbqc)
 {
 	dbqc->setTable(tableName);
 	dbqc->AddParameterDefinition("oid", "INTEGER");
 
-	string xsql =
-			"select sql from sqlite_master where tbl_name='?' and type='table';";
+	string xsql = "select sql from sqlite_master where tbl_name='?' and type='table';";
 
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
@@ -314,8 +302,7 @@ void SQLiteDBConnector::GetTableComponents(const std::string &tableName,
 					string singleParamName = vSingleParam[0];
 					string singleParamType = vSingleParam[1];
 
-					dbqc->AddParameterDefinition(singleParamName,
-							singleParamType);
+					dbqc->AddParameterDefinition(singleParamName, singleParamType);
 				}
 			}
 		}
@@ -335,8 +322,7 @@ void SQLiteDBConnector::GetTableComponents(const std::string &tableName,
 	sqlite3_finalize(stmt);
 }
 
-DBQuery *SQLiteDBConnector::GetQueryForOID(const std::string &tableName,
-		u_int64_t oid)
+DBQuery *SQLiteDBConnector::GetQueryForOID(const std::string &tableName, u_int64_t oid)
 {
 	DBQueryConstructor * dbqc = new DBQueryConstructor;
 	GetTableComponents(tableName, dbqc);
@@ -350,7 +336,7 @@ void SQLiteDBConnector::FillInsertQuery(DBQueryConstructor *dbqc, u_int64_t oid)
 
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, ds.query.c_str(), ds.query.size() + 1, &stmt,
-			NULL);
+	NULL);
 	int s;
 	s = sqlite3_step(stmt);
 	if (s == SQLITE_ROW)

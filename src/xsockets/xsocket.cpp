@@ -71,8 +71,7 @@ bool XSocket::Connect(const std::string &, uint16_t, uint32_t)
 	return false;
 }
 
-void XSocket::TryConnect(const string &hostname, const uint16_t port,
-		uint32_t timeout)
+void XSocket::TryConnect(const string &hostname, const uint16_t port, uint32_t timeout)
 {
 	while (!Connect(hostname, port, timeout))
 	{
@@ -103,7 +102,7 @@ bool XSocket::Write(const void *data, uint32_t datalen)
 
 		// Send the raw data.
 		while ((j = send(sockfd, (char *) data + (datalen - tl), datalen,
-				MSG_NOSIGNAL)) < tl && c < 5)
+		MSG_NOSIGNAL)) < tl && c < 5)
 		{
 			if (j == -1)
 			{
@@ -136,8 +135,7 @@ bool XSocket::Write(const void *data, uint32_t datalen)
 			return true;
 
 		// Send the raw data.
-		while ((j = write(sockfd, (char *) data + (datalen - tl), datalen)) < tl
-				&& c < 5)
+		while ((j = write(sockfd, (char *) data + (datalen - tl), datalen)) < tl && c < 5)
 		{
 			if (j == -1)
 			{
@@ -174,8 +172,7 @@ bool XSocket::Read(void *data, uint32_t datalen)
 			return true;
 
 		// Try to receive the maximum amount of data left.
-		while ((recvlocallenght = recv(sockfd, ((char *) data) + recvlenght,
-				datalen - recvlenght, 0)) != -1 && recvlocallenght)
+		while ((recvlocallenght = recv(sockfd, ((char *) data) + recvlenght, datalen - recvlenght, 0)) != -1 && recvlocallenght)
 		{
 			// Count the data received.
 			recvlenght += recvlocallenght;
@@ -201,8 +198,7 @@ bool XSocket::Read(void *data, uint32_t datalen)
 			return true;
 
 		// Try to receive the maximum amount of data left.
-		while ((recvlocallenght = read(sockfd, ((char *) data) + recvlenght,
-				datalen - recvlenght)) != -1 && recvlocallenght)
+		while ((recvlocallenght = read(sockfd, ((char *) data) + recvlenght, datalen - recvlenght)) != -1 && recvlocallenght)
 		{
 			// Count the data received.
 			recvlenght += recvlocallenght;
@@ -247,8 +243,7 @@ bool XSocket::SetReadTimeout(unsigned int toval)
 	struct timeval timeout;
 	timeout.tv_sec = toval;
 	timeout.tv_usec = 0;
-	if ((setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)))
-			== -1)
+	if ((setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))) == -1)
 	{
 		return false;
 	}

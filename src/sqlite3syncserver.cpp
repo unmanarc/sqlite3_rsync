@@ -28,8 +28,7 @@ void * ClientThread(void * data)
 
 	if (globalArgs.verbosity > 0)
 	{
-		fprintf(stdout, "[V] Handling new connection from %s\n",
-				remotePair.c_str());
+		fprintf(stdout, "[V] Handling new connection from %s\n", remotePair.c_str());
 	}
 
 	ctp->server->AttendClient(ctp->sock);
@@ -61,8 +60,7 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 			{
 				PRINT_ON_VERBOSE("[V] -> SetTable.");
 				currentTable = cmdiface.ReadString(MAX_TABLENAMESIZE);
-				cmdiface.WriteUChar(
-						dbConnector.CheckIfTableExist(currentTable) ? 1 : 0);
+				cmdiface.WriteUChar(dbConnector.CheckIfTableExist(currentTable) ? 1 : 0);
 			}
 			else if (cmd == "GetServerUUID")
 			{
@@ -74,27 +72,23 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 				bool ok;
 				// Read remote nodes.
 				list<string> clientNodes = cmdiface.ReadStringList(&ok,
-						MAX_OIDSIZE);
+				MAX_OIDSIZE);
 				if (!ok)
-					CONNECTION_FAILURE_RET(sock,
-							"[V] Network error, closing connection\n");
+					CONNECTION_FAILURE_RET(sock, "[V] Network error, closing connection\n");
 
 				// Expand nodes (uncompress)
 				clientNodes = ExpandOIDNodes(clientNodes);
 
 				// Calc missing nodes.
-				list<string> currentNodes = dbConnector.GetOIDSForTable(
-						currentTable);
-				list<string> missingNodes = CalcMissingNodes(clientNodes,
-						currentNodes);
+				list<string> currentNodes = dbConnector.GetOIDSForTable(currentTable);
+				list<string> missingNodes = CalcMissingNodes(clientNodes, currentNodes);
 
 				// Compress missing nodes (for transmission)
 				missingNodes = CompressOIDNodes(missingNodes);
 
 				// Send missing nodes.
 				if (!cmdiface.WriteStringList(missingNodes, MAX_OIDSIZE))
-					CONNECTION_FAILURE_RET(sock,
-							"[V] Network error, closing connection\n");
+					CONNECTION_FAILURE_RET(sock, "[V] Network error, closing connection\n");
 			}
 			else if (cmd == "ExecQuery")
 			{
@@ -124,8 +118,7 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 				return;
 			}
 		}
-		else CONNECTION_FAILURE_RET(sock,
-				"[V] Network error, closing connection\n");
+		else CONNECTION_FAILURE_RET(sock, "[V] Network error, closing connection\n");
 	}
 }
 

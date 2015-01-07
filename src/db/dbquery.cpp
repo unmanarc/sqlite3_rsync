@@ -34,8 +34,7 @@ map<unsigned int, Blob> *DBQuery::GetBlobs()
 	return &blobs;
 }
 
-void DBQuery::AddBlob(unsigned int position, char *blobData,
-		unsigned int blobLen)
+void DBQuery::AddBlob(unsigned int position, char *blobData, unsigned int blobLen)
 {
 	Blob b(blobData, blobLen);
 	blobs[position] = b;

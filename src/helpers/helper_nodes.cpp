@@ -36,8 +36,7 @@ std::list<string> ExpandOIDNodes(std::list<string> nodes)
 
 			if (iEndNode > iStartNode)
 			{
-				for (u_int64_t iCurrentNode = iStartNode;
-						iCurrentNode <= iEndNode; iCurrentNode++)
+				for (u_int64_t iCurrentNode = iStartNode; iCurrentNode <= iEndNode; iCurrentNode++)
 				{
 					ret.push_back(UI64ToString(iCurrentNode));
 				}
@@ -96,8 +95,7 @@ std::list<string> CompressOIDNodes(std::list<string> nodes)
 	return ret;
 }
 
-std::list<string> CalcMissingNodes(std::list<string> remoteNodes,
-		const std::list<string> &localNodes)
+std::list<string> CalcMissingNodes(std::list<string> remoteNodes, const std::list<string> &localNodes)
 {
 	for (const string & lNode : localNodes)
 	{

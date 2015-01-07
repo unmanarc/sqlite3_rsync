@@ -24,10 +24,8 @@ public:
 	void SetRecvBuffer(int xsize);
 
 	virtual bool IsConnected();
-	virtual bool Connect(const string & hostname, const uint16_t port,
-			uint32_t timeout);
-	void TryConnect(const string & hostname, const uint16_t port,
-			uint32_t timeout);
+	virtual bool Connect(const string & hostname, const uint16_t port, uint32_t timeout);
+	void TryConnect(const string & hostname, const uint16_t port, uint32_t timeout);
 	virtual bool Listen(uint16_t port, const string & listenOnAddr);
 	virtual XSocket Accept();
 	string LastError() const;
