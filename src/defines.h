@@ -1,0 +1,8 @@
+#ifndef DEFINES_H
+#define DEFINES_H
+
+#define MAX_QUERY_SIZE 524288
+#define MAX_TABLENAMESIZE 4096
+#define MAX_OIDSIZE 64
+
+#endif // DEFINES_H
