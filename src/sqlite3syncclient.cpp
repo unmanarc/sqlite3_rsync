@@ -6,6 +6,10 @@
 
 SQLite3SyncClient::SQLite3SyncClient()
 {
+	monitorStarted = false;
+	lastRetrievedOID = 0;
+	sTcpPort = 38742;
+	interval = 5;
 }
 
 void SQLite3SyncClient::LoadDB(string _dbFile, string _currentTable)
