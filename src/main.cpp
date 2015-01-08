@@ -82,7 +82,7 @@ void * SQLite3SyncClientForTableThread(void * data)
 
 int main(int argc, char *argv[])
 {
-	cout << "SQLite3 R-Sync 0.1a - Done by Aaron Mizrachi (Unmanarc) <aaron@unmanarc.com>" << endl;
+	cout << "SQLite3 R-Sync " << PACKAGE_VERSION << " - Done by Unmanarc - <aaron@unmanarc.com>" << endl;
 
 	int opt = 0, longIndex;
 

@@ -32,5 +32,21 @@ AC_CHECK_LIB(sqlite3,sqlite3_open_v2,,AC_MSG_ERROR([*** Can't find sqlite3]))
 # Packages (.pc)
 #PKG_CHECK_MODULES([libsqlite3],[sqlite3])
 
+
+#debug:
+
+AC_ARG_ENABLE(debug,
+AS_HELP_STRING([--enable-debug],
+               [enable debugging, default: no]),
+[case "${enableval}" in
+             yes) debug=true ;;
+             no)  debug=false ;;
+             *)   AC_MSG_ERROR([bad value ${enableval} for --enable-debug]) ;;
+esac],
+[debug=false])
+
+AM_CONDITIONAL(DEBUG, test x"$debug" = x"true")
+
+
 AC_CONFIG_FILES(Makefile src/Makefile)
 AC_OUTPUT
