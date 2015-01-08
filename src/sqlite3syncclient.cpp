@@ -104,7 +104,7 @@ void SQLite3SyncClient::StartMonitoringDB()
 				continue;
 			}
 
-			PRINT_ON_VERBOSE_STRING_LIST("Receiving server missing nodes...",clientNodes);
+			PRINT_ON_VERBOSE_STRING_LIST("Receiving server missing nodes...",missingNodes);
 
 			missingNodes = ExpandOIDNodes(missingNodes);
 			list<u_int64_t> missingNodes64 = GetOIDNodesByUInt64(missingNodes);
