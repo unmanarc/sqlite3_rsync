@@ -69,28 +69,7 @@ bool SQLiteDBConnector::ExecQuery(DBQuery *query)
 	PRINT_ON_VERBOSE("[V] -> Query executed successfully.\n");
 	return true;
 }
-/*
- bool SQLiteDBConnector::ExecQueries(const std::list<std::string> &queries)
- {
- char *zErrMsg = 0;
- int rc,i=1;
- for (auto query : queries)
- {
- rc = sqlite3_exec(ppDb, query.c_str(), callback, 0, &zErrMsg);
- if( rc != SQLITE_OK )
- {
- fprintf(stderr, "SQL error: %s\n", zErrMsg);
- sqlite3_free(zErrMsg);
- return false;
- }else
- {
- PRINT_ON_VERBOSE("[V] -> Query executed successfully.\n");
- }
- i++;
- }
- return true;
- }
- */
+
 bool SQLiteDBConnector::CheckIfTableExist(const std::string &table)
 {
 	bool ret;
