@@ -1,6 +1,7 @@
 #include "dbqueryconstructor.h"
 #include "helpers/helper_string.h"
 
+
 DBQueryConstructor::DBQueryConstructor() :
 		DBQuery()
 {
@@ -37,7 +38,6 @@ void DBQueryConstructor::AddParameterDefinition(const string &paramName, const s
 
 void DBQueryConstructor::AddParameterValue(const string &paramName, const string &paramValue)
 {
-//	printf("param(%s): %s\n", paramName.c_str(),paramValue.c_str());
 	paramValues[paramName] = paramValue;
 }
 
@@ -80,34 +80,34 @@ void DBQueryConstructor::ConstructQuery()
 		xquery_values += "?";
 	}
 	query = "INSERT INTO `" + table + "` (" + xquery_params + ") values(" + xquery_values + ");\n";
-	//printf("the query: %s\n",query.c_str());
 }
 
 DataSelect DBQueryConstructor::GetDataSelect(unsigned long long oid)
 {
 	DataSelect r;
 	r.query = "SELECT oid";
-
 	DataParameter p;
+
 	p.paramName = "rowid";
 	p.blob = false;
 	r.params.push_back(p);
 
 	for (auto param : paramDefs)
 	{
-		string paramType = param.second;
-
 		p.paramName = param.first;
-		p.blob = (paramType == "BLOB");
 
-		r.query += "," + p.paramName;
-		r.params.push_back(p);
+		if (p.paramName!="oid")
+		{
+			string paramType = param.second;
+
+			p.blob = (paramType == "BLOB");
+
+			r.query += "," + p.paramName;
+			r.params.push_back(p);
+		}
 	}
 
-	char val[128];
-	sprintf(val, "%llu", oid);
-	r.query += " FROM " + table + string(" WHERE oid='") + string(val) + string("';");
-
+	r.query += " FROM " + table + string(" WHERE oid='") + UI64ToString(oid) + string("';");
 	return r;
 }
 
