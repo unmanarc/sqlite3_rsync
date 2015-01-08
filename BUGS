@@ -1,0 +1,1 @@
+A0001-LOW: verbosity does not filter special VT characters from database (e.g. \033). Verbosity is for debug purporses only. DO NOT USE FOR PRODUCTION.
