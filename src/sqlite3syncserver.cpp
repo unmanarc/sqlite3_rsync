@@ -103,12 +103,12 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 			else if (cmd == "Exit")
 			{
 				// Proper exit.
-				PRINT_ON_VERBOSE("[V] Closing connection (by remote peer)\n");
+				PRINT_ON_VERBOSE("Closing connection (by remote peer)");
 				sock.Close();
 				return;
 			}
 		}
-		else CONNECTION_FAILURE_RET(sock, "[V] Network error, closing connection\n");
+		else CONNECTION_FAILURE_RET(sock, "Network error, closing connection");
 	}
 }
 
