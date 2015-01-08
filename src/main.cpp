@@ -32,7 +32,7 @@ void help_and_exit()
 {
 	cout << "Help:" << endl;
 	cout << "-----" << endl;
-	cout << "sqlite3_rsync synchronizes SQLite3 databases from the client to the server using tables OID." << endl;
+	cout << "sqlite3_rsync synchronizes SQLite3 databases from the client to the server using tables ROWID." << endl;
 	cout << endl;
 	cout << "Server Mode:" << endl;
 	cout << "------------" << endl;
