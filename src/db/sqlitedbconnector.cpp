@@ -94,7 +94,7 @@ std::string SQLiteDBConnector::GetCreateTable(const std::string &table)
 			"SELECT sql FROM (SELECT sql sql, type type, tbl_name tbl_name, name name, rowid x FROM sqlite_master UNION ALL SELECT sql, type, tbl_name, name, rowid FROM sqlite_temp_master) WHERE lower(tbl_name) LIKE ? AND type!='meta' AND sql NOTNULL ORDER BY rowid";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
-	if (sqlite3_bind_text(stmt, 1, 	table.c_str(), table.size()+1, SQLITE_STATIC ) != SQLITE_OK )
+	if (sqlite3_bind_text(stmt, 1, table.c_str(), table.size() + 1, SQLITE_STATIC) != SQLITE_OK)
 	{
 		fprintf(stderr, "bind error: %s\n", sqlite3_errmsg(ppDb));
 	}
@@ -126,7 +126,7 @@ std::string SQLiteDBConnector::GetCreateTable(const std::string &table)
 	sqlite3_clear_bindings(stmt);
 	sqlite3_finalize(stmt);
 
-	PRINT_ON_VERBOSE_2("Create Table Structure",rsp.c_str());
+	PRINT_ON_VERBOSE_2("Create Table Structure", rsp.c_str());
 	return rsp;
 }
 
@@ -140,9 +140,9 @@ std::list<std::string> SQLiteDBConnector::GetOIDSForTable(const std::string &tab
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
 	//sqlite3_bind_text(stmt, 1, table.c_str(), table.size(), SQLITE_STATIC);
 	/*if (sqlite3_bind_text(stmt, 1, 	table.c_str(), table.size()+1, SQLITE_STATIC ) != SQLITE_OK )
-	{
-		fprintf(stderr, "bind error: %s\n", sqlite3_errmsg(ppDb));
-	}*/
+	 {
+	 fprintf(stderr, "bind error: %s\n", sqlite3_errmsg(ppDb));
+	 }*/
 
 	while (1)
 	{
@@ -199,7 +199,7 @@ std::list<u_int64_t> SQLiteDBConnector::GetOIDSGreaterThan(const string &tableNa
 
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
-	sqlite3_bind_text(stmt, 1, sMinoid.c_str(), sMinoid.size(), SQLITE_STATIC );
+	sqlite3_bind_text(stmt, 1, sMinoid.c_str(), sMinoid.size(), SQLITE_STATIC);
 	while (1)
 	{
 		int s;
@@ -340,7 +340,6 @@ void SQLiteDBConnector::FillInsertQuery(DBQueryConstructor *dbqc, u_int64_t oid)
 		fprintf(stderr, "Get Table Components failed...\n");
 		exit(1);
 	}
-
 
 	dbqc->ConstructQuery();
 	sqlite3_reset(stmt);
