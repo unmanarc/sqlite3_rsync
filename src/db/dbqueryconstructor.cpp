@@ -89,7 +89,7 @@ DataSelect DBQueryConstructor::GetDataSelect(unsigned long long oid)
 	r.query = "SELECT oid";
 
 	DataParameter p;
-	p.paramName = "oid";
+	p.paramName = "rowid";
 	p.blob = false;
 	r.params.push_back(p);
 
