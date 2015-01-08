@@ -123,10 +123,7 @@ void SQLite3SyncClient::StartMonitoringDB()
 		{
 			DBQuery* query = (DBQuery*) heapQueries.GetElement();
 
-			if (globalArgs.verbosity>=1)
-			{
-				printf("[%p] Remote executing query...: [%s]\n",this,query->GetQuery());
-			}
+			PRINT_ON_VERBOSE_2("Remote executing query...",query->GetQuery());
 
 			if ((r = ExecQuery(&cmdiface, *query)) == -1)
 			{
