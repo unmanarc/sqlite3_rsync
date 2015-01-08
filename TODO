@@ -1,0 +1,3 @@
+- Use encryption layer (TLS)
+- Password based Authentication
+- Delete rows that has been deleted locally.

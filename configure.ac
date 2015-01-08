@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT(sqlite3_rsync, 0.1)
+AC_INIT(sqlite3_rsync, 0.2)
 
 m4_include([src/m4/ax_cxx_compile_stdcxx_11.m4])
 dnl AC_CONFIG_MACRO_DIR([m4])

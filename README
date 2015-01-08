@@ -1,10 +1,58 @@
-sqlite3_rsync
--------------
+**************
+sqlite3_rsync:
+**************
 
-v0.1:
-- First commit, the source is not tested at all... ;)
+sqlite3_rsync is a client-server application that synchronizes SQLite3 
+databases using tables ROWID.
+
+[+] Operational mode:
+
+ - Server: It Waits for TCP Server connections. it may contain a partially
+           filled database or no database at all.
+ - Client: It connect to the Server, and if a database is updated on client
+           side, the client push changes on server. 
+
+[+] How to use it:
+
+1st Recommendation: If the source database contains a lot of registries
+                    copy the database file from the source to your storage
+                    server. That will avoid our application to create and 
+                    transfer the whole database to the server.
 
 
+ [-] Then, start the synchronization server with the target backup database:
 
+                 ./sqlite3_rsync -d ~/msgstore-w.db -s
 
+ [-] Now, from the side where the origin database comes, start the client...
+
+        ./sqlite3_rsync -v -c 192.168.0.100 -t messages -d msgstore.db 
+ 
+     where 192.168.0.100 is the server ip address...
+
+** Please don't hesitate to read the help (./sqlite3_rsync -h), if you need **
+                     ** further details and options **
+
+[+] Purporses:
+
+Data replication. Which includes:
+
+- Near Real Time backup of databases.
+- Database synchronization
+
+[+] Security recommendations:
+
+This application uses a very simple and with almost no security considerations 
+protocol, that includes no authentication mechanism, and no ciphering at all.
+
+Use a tool like stunnel or a VPN to cipher and authenticate the communication 
+of this application. Otherwise, your SQL queries could be exposed.
+
+******************************************************************************
+
+DISCLAIMER:
+
+THIS IS A VERY EXPERIMENTAL APPLICATION. I'M NOT RESPONSIBLE FOR ANY DAMAGE.
+THAT INCLUDES BUT IS NOT LIMITED TO: MALFUNCTION, BUGS, CORRUPTED DATABASES, 
+FILESYSTEM OR DISK DAMAGE, NETWORK USAGE.
 
