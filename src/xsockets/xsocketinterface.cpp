@@ -231,7 +231,7 @@ bool XSocketInterface::WriteString(const string &val, unsigned int max)
 	unsigned int upSize = (val.length() > max ? max : val.length());
 	upSize = htonl(upSize);
 	// Enviar
-	if (!Write(&upSize, sizeof(u_char)))
+	if (!Write(&upSize, sizeof(unsigned int)))
 		return false;
 	// Enviar datos.
 	return (Write(val.c_str(), upSize));
