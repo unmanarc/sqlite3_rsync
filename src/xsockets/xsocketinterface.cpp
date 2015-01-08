@@ -233,6 +233,7 @@ bool XSocketInterface::WriteString(const string &val, unsigned int max)
 	// Enviar
 	if (!Write(&upSize, sizeof(unsigned int)))
 		return false;
+
 	// Enviar datos.
-	return (Write(val.c_str(), upSize));
+	return (Write(val.c_str(), ntohl(upSize)));
 }

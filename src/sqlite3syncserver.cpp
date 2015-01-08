@@ -50,7 +50,9 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 
 	while (1)
 	{
+
 		cmd = cmdiface.ReadStringLow();
+		PRINT_ON_VERBOSE_2("Receiving command",cmd.c_str());
 		if (cmd != "")
 		{
 			if (cmd == "SetTable")
@@ -90,7 +92,9 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 
 				// Send missing nodes.
 				if (!cmdiface.WriteStringList(missingNodes, MAX_OIDSIZE))
+				{
 					CONNECTION_FAILURE_RET(sock, "Network error, closing connection\n");
+				}
 			}
 			else if (cmd == "ExecQuery")
 			{
@@ -108,7 +112,10 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 				return;
 			}
 		}
-		else CONNECTION_FAILURE_RET(sock, "Network error, closing connection");
+		else
+		{
+			CONNECTION_FAILURE_RET(sock, "Network error, closing connection (main)");
+		}
 	}
 }
 

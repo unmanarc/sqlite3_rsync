@@ -37,6 +37,7 @@ void DBQueryConstructor::AddParameterDefinition(const string &paramName, const s
 
 void DBQueryConstructor::AddParameterValue(const string &paramName, const string &paramValue)
 {
+//	printf("param(%s): %s\n", paramName.c_str(),paramValue.c_str());
 	paramValues[paramName] = paramValue;
 }
 
@@ -79,6 +80,7 @@ void DBQueryConstructor::ConstructQuery()
 		xquery_values += "?";
 	}
 	query = "INSERT INTO `" + table + "` (" + xquery_params + ") values(" + xquery_values + ");\n";
+	//printf("the query: %s\n",query.c_str());
 }
 
 DataSelect DBQueryConstructor::GetDataSelect(unsigned long long oid)

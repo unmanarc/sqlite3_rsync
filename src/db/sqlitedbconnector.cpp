@@ -66,14 +66,14 @@ bool SQLiteDBConnector::ExecQuery(DBQuery *query)
 	sqlite3_reset(stmt);
 	sqlite3_clear_bindings(stmt);
 	sqlite3_finalize(stmt);
-	PRINT_ON_VERBOSE("[V] -> Query executed successfully.\n");
+	PRINT_ON_VERBOSE("Query executed successfully.");
 	return true;
 }
 
 bool SQLiteDBConnector::CheckIfTableExist(const std::string &table)
 {
 	bool ret;
-	string xsql = "select sql from sqlite_master where tbl_name=\"?\";";
+	string xsql = "select sql from sqlite_master where tbl_name=?;";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
 	sqlite3_bind_text(stmt, 1, /* The number of the argument. */
@@ -91,18 +91,21 @@ std::string SQLiteDBConnector::GetCreateTable(const std::string &table)
 {
 	std::string rsp;
 	string xsql =
-			"SELECT sql FROM (SELECT sql sql, type type, tbl_name tbl_name, name name, rowid x FROM sqlite_master UNION ALL SELECT sql, type, tbl_name, name, rowid FROM sqlite_temp_master) WHERE lower(tbl_name) LIKE '?' AND type!='meta' AND sql NOTNULL ORDER BY rowid";
+			"SELECT sql FROM (SELECT sql sql, type type, tbl_name tbl_name, name name, rowid x FROM sqlite_master UNION ALL SELECT sql, type, tbl_name, name, rowid FROM sqlite_temp_master) WHERE lower(tbl_name) LIKE ? AND type!='meta' AND sql NOTNULL ORDER BY rowid";
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
-	sqlite3_bind_text(stmt, 1, /* The number of the argument. */
-	table.c_str(), table.size(), 0 /* The callback. */
-	);
+	if (sqlite3_bind_text(stmt, 1, 	table.c_str(), table.size()+1, SQLITE_STATIC ) != SQLITE_OK )
+	{
+		fprintf(stderr, "bind error: %s\n", sqlite3_errmsg(ppDb));
+	}
+
 	while (1)
 	{
 		int s;
 		s = sqlite3_step(stmt);
 		if (s == SQLITE_ROW)
 		{
+			printf("Get Table schema adding...\n");
 			const unsigned char * text;
 			text = sqlite3_column_text(stmt, 0);
 			rsp += (string) (char *) text;
@@ -110,6 +113,7 @@ std::string SQLiteDBConnector::GetCreateTable(const std::string &table)
 		}
 		else if (s == SQLITE_DONE)
 		{
+			printf("Get Table schema end...\n");
 			break;
 		}
 		else
@@ -122,6 +126,7 @@ std::string SQLiteDBConnector::GetCreateTable(const std::string &table)
 	sqlite3_clear_bindings(stmt);
 	sqlite3_finalize(stmt);
 
+	PRINT_ON_VERBOSE_2("Create Table Structure",rsp.c_str());
 	return rsp;
 }
 
@@ -129,13 +134,16 @@ std::list<std::string> SQLiteDBConnector::GetOIDSForTable(const std::string &tab
 {
 	std::list<std::string> r;
 
-	string xsql = "SELECT oid AS TEXT FROM ?;";
+	string xsql = "SELECT oid AS TEXT FROM " + table;
 
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
-	sqlite3_bind_text(stmt, 1, /* The number of the argument. */
-	table.c_str(), table.size(), 0 /* The callback. */
-	);
+	//sqlite3_bind_text(stmt, 1, table.c_str(), table.size(), SQLITE_STATIC);
+	/*if (sqlite3_bind_text(stmt, 1, 	table.c_str(), table.size()+1, SQLITE_STATIC ) != SQLITE_OK )
+	{
+		fprintf(stderr, "bind error: %s\n", sqlite3_errmsg(ppDb));
+	}*/
+
 	while (1)
 	{
 		int s;
@@ -187,16 +195,11 @@ std::list<u_int64_t> SQLiteDBConnector::GetOIDSGreaterThan(const string &tableNa
 	std::list<u_int64_t> r;
 
 	string sMinoid = UI64ToString(minoid);
-	string xsql = "SELECT oid AS TEXT FROM ? WHERE oid>?;";
+	string xsql = "SELECT oid AS TEXT FROM " + tableName + " WHERE oid>?;";
 
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
-	sqlite3_bind_text(stmt, 1, /* The number of the argument. */
-	tableName.c_str(), tableName.size(), 0 /* The callback. */
-	);
-	sqlite3_bind_text(stmt, 2, /* The number of the argument. */
-	sMinoid.c_str(), sMinoid.size(), 0 /* The callback. */
-	);
+	sqlite3_bind_text(stmt, 1, sMinoid.c_str(), sMinoid.size(), SQLITE_STATIC );
 	while (1)
 	{
 		int s;
@@ -241,7 +244,7 @@ void SQLiteDBConnector::GetTableComponents(const std::string &tableName, DBQuery
 	dbqc->setTable(tableName);
 	dbqc->AddParameterDefinition("oid", "INTEGER");
 
-	string xsql = "select sql from sqlite_master where tbl_name='?' and type='table';";
+	string xsql = "select sql from sqlite_master where tbl_name=? and type='table';";
 
 	sqlite3_stmt * stmt;
 	sqlite3_prepare_v2(ppDb, xsql.c_str(), xsql.size() + 1, &stmt, NULL);
@@ -312,9 +315,13 @@ void SQLiteDBConnector::FillInsertQuery(DBQueryConstructor *dbqc, u_int64_t oid)
 			DataParameter p = ds.params[i];
 			if (!p.blob)
 			{
-				char * text = strdup((char *) sqlite3_column_text(stmt, i));
-				dbqc->AddParameterValue(p.paramName, text);
-				free(text);
+				unsigned int len = sqlite3_column_bytes(stmt, i);
+				if (len)
+				{
+					char * text = strdup((char *) sqlite3_column_text(stmt, i));
+					dbqc->AddParameterValue(p.paramName, text);
+					free(text);
+				}
 			}
 			else
 			{
@@ -333,6 +340,9 @@ void SQLiteDBConnector::FillInsertQuery(DBQueryConstructor *dbqc, u_int64_t oid)
 		fprintf(stderr, "Get Table Components failed...\n");
 		exit(1);
 	}
+
+
+	dbqc->ConstructQuery();
 	sqlite3_reset(stmt);
 	sqlite3_clear_bindings(stmt);
 	sqlite3_finalize(stmt);
