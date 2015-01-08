@@ -3,6 +3,7 @@
 #include "db/dbquery.h"
 #include "helpers/helper_nodes.h"
 #include "defines.h"
+#include "verbose.h"
 
 SQLite3SyncClient::SQLite3SyncClient()
 {
@@ -56,15 +57,18 @@ void SQLite3SyncClient::StartMonitoringDB()
 				printf("Retrying connection to %s:%d.\n", remoteHost.c_str(), sTcpPort);
 			}
 		}
-		printf("Connected to %s:%d\n", remoteHost.c_str(), sTcpPort);
+		printf("[%p] Connected to %s:%d\n", this, remoteHost.c_str(), sTcpPort);
 
 		XSocketInterface cmdiface = serverConnection;
 
+		PRINT_ON_VERBOSE_2("Table",currentTable.c_str());
+
 		cmdiface.WriteStringLow("SetTable");
 		cmdiface.WriteString(currentTable, MAX_TABLENAMESIZE);
-
 		if (!cmdiface.ReadUChar())
 		{
+			PRINT_ON_VERBOSE("Table does not exist on remote server, creating it...");
+
 			if ((r = ExecQuery(&cmdiface, dbConnector.GetCreateTable(currentTable))) < 0)
 			{
 				// reconnect.
@@ -75,25 +79,33 @@ void SQLite3SyncClient::StartMonitoringDB()
 		// Grab UUID.
 		cmdiface.WriteStringLow("GetServerUUID");
 		string currentUUID = cmdiface.ReadStringLow();
+
+		PRINT_ON_VERBOSE_2("Server UUID",currentUUID.c_str());
+
 		// SYNC (different uuid, or first time)
 		if (remoteUUID != currentUUID)
 		{
 			std::list<std::string> clientNodes = dbConnector.GetOIDSForTable(currentTable);
+
 			// Compress it before send.
 			clientNodes = CompressOIDNodes(clientNodes);
+
+			PRINT_ON_VERBOSE_STRING_LIST("New UUID Detected, sending Client OID's table...",clientNodes);
 
 			cmdiface.WriteStringLow("GetMissingNodes");
 			cmdiface.WriteStringList(clientNodes, MAX_OIDSIZE);
 
 			bool ok;
-			list<string> missingNodes = cmdiface.ReadStringList(&ok,
-			MAX_OIDSIZE);
+			list<string> missingNodes = cmdiface.ReadStringList(&ok,MAX_OIDSIZE);
 			if (!ok)
 			{
 				serverConnection.Close();
 				ReconnectTimeout();
 				continue;
 			}
+
+			PRINT_ON_VERBOSE_STRING_LIST("Receiving server missing nodes...",clientNodes);
+
 			missingNodes = ExpandOIDNodes(missingNodes);
 			list<u_int64_t> missingNodes64 = GetOIDNodesByUInt64(missingNodes);
 			AddQueries(dbConnector.GetQueriesForOIDS(currentTable, missingNodes64, &lastRetrievedOID));
@@ -110,6 +122,11 @@ void SQLite3SyncClient::StartMonitoringDB()
 		while (1)
 		{
 			DBQuery* query = (DBQuery*) heapQueries.GetElement();
+
+			if (globalArgs.verbosity>=1)
+			{
+				printf("[%p] Remote executing query...: [%s]\n",this,query->GetQuery());
+			}
 
 			if ((r = ExecQuery(&cmdiface, *query)) == -1)
 			{
@@ -197,7 +214,7 @@ int SQLite3SyncClient::ExecQuery(XSocketInterface *cmdiface, const DBQuery &quer
 		if (!rsp)
 		{
 			// Reinsert stop and pass....
-			printf("Insertion Error (@query)... Reinserting at (timeout)...\n");
+			printf("[%p] Insertion Error (@query)... Reinserting at (timeout)...\n",this);
 			ReconnectTimeout();
 			return -2;
 		}

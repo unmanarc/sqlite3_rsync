@@ -5,15 +5,11 @@
 #include "xsockets/xsocket_tcp.h"
 #include "xsockets/xsocketinterface.h"
 #include <unistd.h>
-
+#include "verbose.h"
 #include "defines.h"
-
 #include "helpers/helper_nodes.h"
 
 extern string appuuid;
-
-#define CONNECTION_FAILURE_RET(x,y) x.Close();if(globalArgs.verbosity>0) fprintf(stderr,"%s",y); return
-#define PRINT_ON_VERBOSE(x) if(globalArgs.verbosity>0) fprintf(stdout,"%s",x)
 
 struct ClientThreadParms
 {
@@ -28,7 +24,7 @@ void * ClientThread(void * data)
 
 	if (globalArgs.verbosity > 0)
 	{
-		fprintf(stdout, "[V] Handling new connection from %s\n", remotePair.c_str());
+		fprintf(stdout, "[%p] Handling new connection from %s (@%p)\n", ctp, remotePair.c_str(),ctp->server);
 	}
 
 	ctp->server->AttendClient(ctp->sock);
@@ -39,6 +35,7 @@ void * ClientThread(void * data)
 
 SQLite3SyncServer::SQLite3SyncServer()
 {
+	sTcpPort = 38742;
 }
 
 SQLite3SyncServer::~SQLite3SyncServer()
@@ -58,8 +55,8 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 		{
 			if (cmd == "SetTable")
 			{
-				PRINT_ON_VERBOSE("[V] -> SetTable.");
 				currentTable = cmdiface.ReadString(MAX_TABLENAMESIZE);
+				PRINT_ON_VERBOSE_2("Set Table", currentTable.c_str());
 				cmdiface.WriteUChar(dbConnector.CheckIfTableExist(currentTable) ? 1 : 0);
 			}
 			else if (cmd == "GetServerUUID")
@@ -68,13 +65,16 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 			}
 			else if (cmd == "GetMissingNodes")
 			{
-				PRINT_ON_VERBOSE("[V] -> GetMissingNodes.\n");
 				bool ok;
 				// Read remote nodes.
-				list<string> clientNodes = cmdiface.ReadStringList(&ok,
-				MAX_OIDSIZE);
+				list<string> clientNodes = cmdiface.ReadStringList(&ok,MAX_OIDSIZE);
+
+				PRINT_ON_VERBOSE_STRING_LIST("GetMissingNodes (client nodes)",clientNodes);
+
 				if (!ok)
-					CONNECTION_FAILURE_RET(sock, "[V] Network error, closing connection\n");
+				{
+					CONNECTION_FAILURE_RET(sock, "Network error, closing connection\n");
+				}
 
 				// Expand nodes (uncompress)
 				clientNodes = ExpandOIDNodes(clientNodes);
@@ -86,34 +86,24 @@ void SQLite3SyncServer::AttendClient(XSocket sock)
 				// Compress missing nodes (for transmission)
 				missingNodes = CompressOIDNodes(missingNodes);
 
+				PRINT_ON_VERBOSE_STRING_LIST("GetMissingNodes (left nodes)",missingNodes);
+
 				// Send missing nodes.
 				if (!cmdiface.WriteStringList(missingNodes, MAX_OIDSIZE))
-					CONNECTION_FAILURE_RET(sock, "[V] Network error, closing connection\n");
+					CONNECTION_FAILURE_RET(sock, "Network error, closing connection\n");
 			}
 			else if (cmd == "ExecQuery")
 			{
 				// Execute queries on the database here.
-				PRINT_ON_VERBOSE("[V] -> Receiving Query.\n");
-				//bool ok;
-				//string query = cmdiface.ReadString(MAX_QUERY_SIZE,&ok);
-				//if (!ok) CONNECTION_FAILURE_RET(sock,"[V] Network error, closing connection\n");
 				DBQuery q;
 				q.SocketUnSerialize(&cmdiface);
+				PRINT_ON_VERBOSE_2("SQL Query",q.GetQuery());
 				cmdiface.WriteUChar(dbConnector.ExecQuery(&q)?1:0);
 			}
-			/*else if (cmd == "ExecQueries")
-			 {
-			 // Execute queries on the database here.
-			 PRINT_ON_VERBOSE("[V] -> Receiving Queries.\n");
-			 bool ok;
-			 list<string> queries = cmdiface.ReadStringList(&ok, MAX_QUERY_SIZE);
-			 if (!ok) CONNECTION_FAILURE_RET(sock,"[V] Network error, closing connection\n");
-			 cmdiface.WriteUChar(dbConnector.ExecQueries(queries)?1:0);
-			 }*/
 			else if (cmd == "Exit")
 			{
 				// Proper exit.
-				if (globalArgs.verbosity>0) fprintf(stdout,"[V] Closing connection (by remote peer)\n");
+				PRINT_ON_VERBOSE("[V] Closing connection (by remote peer)\n");
 				sock.Close();
 				return;
 			}

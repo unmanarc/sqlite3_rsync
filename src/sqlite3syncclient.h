@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #include "db/sqlitedbconnector.h"
-#include "global_args.h"
 #include "sqlite3.h"
 
 #include "xsockets/xsocket_tcp.h"

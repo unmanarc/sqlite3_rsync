@@ -6,10 +6,6 @@
 #include "xsockets/xsocket.h"
 #include "db/sqlitedbconnector.h"
 
-#include "global_args.h"
-
-extern globalArgs_t globalArgs;
-
 class SQLite3SyncServer
 {
 public:

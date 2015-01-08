@@ -4,20 +4,7 @@
 #include "global_args.h"
 #include "helpers/helper_string.h"
 
-extern globalArgs_t globalArgs;
-
-#define PRINT_ON_VERBOSE(x) if(globalArgs.verbosity>0) fprintf(stdout,"%s",x)
-/*
- static int callback(void *, int argc, char **argv, char **azColName)
- {
- int i;
- for(i=0; i<argc; i++)
- {
- printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
- }
- printf("\n");
- return 0;
- }*/
+#include "verbose.h"
 
 SQLiteDBConnector::SQLiteDBConnector()
 {
